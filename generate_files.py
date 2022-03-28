@@ -1,8 +1,10 @@
 from pathlib import Path
 
-for i in range(8, 26):
+for i in range(9, 26):
     with open(f"problem_{i}.py", "w") as f:
         f.write(f"""
+import numpy as np
+
 data_path = "data/problem_{i}.txt"
 # data_path = "data/problem_{i}_test.txt"
 

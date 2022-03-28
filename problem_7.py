@@ -32,7 +32,7 @@ print(f"Part 1 solution: {np.abs(data - int(np.median(data))).sum()}")
 #        c = the centroid
 #        s = (x_i - c) = the distance the 🦀 boi has to move
 #
-# find centroid c that minimizes:
+# find centroid c that minimizes the total cost ε:
 #
 #        ε = Σ[(x_i + c)(x_i - c + 1) / 2]
 #
@@ -42,7 +42,7 @@ print(f"Part 1 solution: {np.abs(data - int(np.median(data))).sum()}")
 #      2cN = 2 Σ[x_i] - N
 #        c = (2 Σ[x_i] - N) / 2N
 
-centroid = int(np.round(((2 * (data).sum() - len(data)) / (2 * len(data)))))
+centroid = int(np.round((2 * data.sum() - len(data)) / (2 * len(data))))
 
 # Since our continuous cost function is not symmetrical about s = 0 and actually has a minumum at
 # s = -1/2, the nearest integer centroid value is occasionally (when???) too low by 1.
