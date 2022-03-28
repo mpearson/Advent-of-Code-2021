@@ -120,7 +120,7 @@ translated_segments = np.zeros_like(query_patterns)
 translated_segments[row_indices, number_indices, decoder_map[row_indices, segment_indices]] = True
 
 # indexing like this ain't natural, I tell you what
-digit_translation = np.argmax(np.all(translated_segments[:, :, :] == segment_definitions[:, None, None, :], axis=3), axis=0)
+digit_translation = np.argmax(np.all(translated_segments == segment_definitions[:, None, None], axis=3), axis=0)
 # print(digit_translation)
 
 exponents = 10 ** np.arange(digit_translation.shape[1])[::-1]
