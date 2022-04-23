@@ -36,7 +36,7 @@ print(f"Part 1 solution: {np.abs(data - int(np.median(data))).sum()}")
 #
 #        ε = Σ[(x_i + c)(x_i - c + 1) / 2]
 #
-#    δε/δc = 1/2 Σ[c² - (2x_i + 1)c]
+#    δε/δc = 1/2 δ/δc Σ[c² - (2x_i + 1)c]
 #          = 1/2 Σ[2c - 2x_i - 1]
 #          = 0
 #      2cN = 2 Σ[x_i] - N
