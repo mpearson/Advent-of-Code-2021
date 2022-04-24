@@ -1,7 +1,7 @@
 import numpy as np
 from numpy.lib.stride_tricks import sliding_window_view
 
-data = np.genfromtxt("data/problem_1.txt").astype(np.int64)
+data = np.genfromtxt("data/problem_01.txt").astype(np.int64)
 # part 1
 print(f"Part 1 solution: {np.sum(np.diff(data) > 0)}")
 

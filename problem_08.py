@@ -1,8 +1,8 @@
 import sys
 import numpy as np
 
-data_path = "data/problem_8.txt"
-# data_path = "data/problem_8_test.txt"
+data_path = "data/problem_08.txt"
+# data_path = "data/problem_08_test.txt"
 
 
 with open(data_path, "r") as f:

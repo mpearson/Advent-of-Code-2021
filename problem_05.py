@@ -1,8 +1,8 @@
 import io
 import numpy as np
 
-# data_path = "data/problem_5.txt"
-data_path = "data/problem_5_test.txt"
+# data_path = "data/problem_05.txt"
+data_path = "data/problem_05_test.txt"
 
 with open(data_path, "r") as f:
     better_file = io.StringIO(f.read().replace(" -> ", ","))

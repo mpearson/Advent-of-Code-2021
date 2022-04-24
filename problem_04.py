@@ -3,8 +3,8 @@ from numpy.lib.stride_tricks import sliding_window_view
 
 # import pandas as pd
 
-data_path = "data/problem_4.txt"
-# data_path = "data/problem_4_test.txt"
+data_path = "data/problem_04.txt"
+# data_path = "data/problem_04_test.txt"
 
 with open(data_path, "r") as f:
     numbers = np.array([int(n) for n in f.readline().strip().split(",")], dtype=np.uint32)

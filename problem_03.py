@@ -1,7 +1,7 @@
 import numpy as np
 
-data_path = "data/problem_3.txt"
-# data_path = "data/problem_3_test.txt"
+data_path = "data/problem_03.txt"
+# data_path = "data/problem_03_test.txt"
 
 data = np.loadtxt(data_path, dtype="S")
 input_width = len(data[0])

@@ -1,8 +1,8 @@
 import numpy as np
 from numpy.lib.stride_tricks import sliding_window_view
 
-data_path = "data/problem_9.txt"
-# data_path = "data/problem_9_test.txt"
+data_path = "data/problem_09.txt"
+# data_path = "data/problem_09_test.txt"
 
 with open(data_path, "rb") as f:
     row_length = len(f.readline().strip())

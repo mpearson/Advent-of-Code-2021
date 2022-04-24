@@ -3,7 +3,7 @@ from numpy.lib.stride_tricks import sliding_window_view
 
 import pandas as pd
 
-df = pd.read_csv("data/problem_2.txt", sep=" ", names=["dir", "value"])
+df = pd.read_csv("data/problem_02.txt", sep=" ", names=["dir", "value"])
 
 # part 1
 dx = df[df["dir"] == "forward"]["value"].sum()

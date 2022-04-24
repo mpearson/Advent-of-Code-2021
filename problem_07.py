@@ -1,7 +1,7 @@
 import numpy as np
 
-data_path = "data/problem_7.txt"
-# data_path = "data/problem_7_test.txt"
+data_path = "data/problem_07.txt"
+# data_path = "data/problem_07_test.txt"
 
 data = np.genfromtxt(data_path, dtype=int, delimiter=",")
 
