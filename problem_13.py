@@ -12,7 +12,7 @@ with open(data_path, "r") as f:
         if line:
             if line[0] == "f":
                 direction, value = line.rsplit(" ", 1)[-1].split("=")
-                folds.append((direction == "x", int(value)))
+                folds.append((int(direction == "x"), int(value)))
             else:
                 dot_x, dot_y = line.split(",")
                 initial_state.append((int(dot_y), int(dot_x)))
@@ -27,35 +27,20 @@ def print_grid(state):
     for row in dot_grid:
         print("".join([("#" if x == 1 else " ") for x in row]))
 
-def fold_y(state, crease_value):
-    is_reflected = state[:, 0] > crease_value
+def compute_fold(state, axis, crease_value):
+    is_reflected = state[:, axis] > crease_value
     new_state = state.copy()
-    new_state[is_reflected, 0] = (2 * crease_value) - state[is_reflected, 0]
-    return np.unique(new_state, axis=0)
-
-def fold_x(state, crease_value):
-    is_reflected = state[:, 1] > crease_value
-    new_state = state.copy()
-    new_state[is_reflected, 1] = (2 * crease_value) - state[is_reflected, 1]
+    new_state[is_reflected, axis] = (2 * crease_value) - state[is_reflected, axis]
     return np.unique(new_state, axis=0)
 
 # part 1
-is_x, crease_value = folds[0]
-if is_x:
-    current_state = fold_x(initial_state, crease_value)
-else:
-    current_state = fold_y(initial_state, crease_value)
-
-# print_grid(current_state)
+current_state = compute_fold(initial_state, *folds[0])
 print(f"Part 1 solution: {len(current_state)}")
 
 # part 2
 current_state = initial_state
-for is_x, crease_value in folds:
-    if is_x:
-        current_state = fold_x(current_state, crease_value)
-    else:
-        current_state = fold_y(current_state, crease_value)
+for fold in folds:
+    current_state = compute_fold(current_state, *fold)
 
 print("Part 2 solution:")
 print_grid(current_state)
