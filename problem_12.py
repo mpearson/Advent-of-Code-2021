@@ -1,5 +1,5 @@
 
-import numpy as np
+# import numpy as np
 
 data_path = "data/problem_12.txt"
 # data_path = "data/problem_12_test.txt"
@@ -8,7 +8,6 @@ class Node:
     def __init__(self, name):
         self.name = name
         self.big = ord(self.name[0]) < ord("a")
-        self.visited = False
         self.neighbors = []
 
 node_dict = {}
