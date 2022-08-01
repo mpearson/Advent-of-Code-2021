@@ -1,41 +1,23 @@
-import sys
-import numpy as np
-# from collections import namedtuple
-from dataclasses import dataclass
 import io
+import sys
+import heapq
+import numpy as np
+from dataclasses import dataclass
 
 data_path = "data/problem_15.txt"
-# data_path = "data/problem_15_test.txt"
+data_path = "data/problem_15_test.txt"
+# data_path = "data/problem_15_test_2.txt"
 
 with open(data_path, "rb") as f:
     row_length = len(f.readline().strip())
 
-# data = np.genfromtxt(data_path, dtype="S").view(dtype=np.uint8).reshape(-1, row_length) - ord("0")
-
-row_length = 10
-txt = """
-1199111119
-9199111119
-9199199919
-9199199919
-9199199919
-9199199919
-9199199919
-9111199919
-9999999919
-9999991111
-"""
-data = np.genfromtxt(io.StringIO(txt), dtype="S").view(dtype=np.uint8).reshape(-1, row_length) - ord("0")
+data = np.genfromtxt(data_path, dtype="S").view(dtype=np.uint8).reshape(-1, row_length) - ord("0")
 data = data.astype(int)
 
-
-print(data)
-
-# data[...] = 1
-
+# print(data)
 
 @dataclass
-class Node:
+class GraphNode:
     y: int
     x: int
 
@@ -44,11 +26,11 @@ class Node:
 
     # The minimum cost to get to the end from this node.This distance is the sum of all node
     # values along the cheapest path to the end.
-    distance: int = 999 #sys.maxsize
+    distance: int = 0
 
-    # The open set is the set of nodes which have been discovered via adjacency to the closed set,
-    # but for which we don't yet know the minimum distance.
-    # is_open: bool = False
+    # Whether the node has been discovered. Could use distance but it turns out the int comparison
+    # of `distance == sys.maxsize` is significantly slower than using this flag. With the flag, the
+    # initial distance value doesn't matter.
     discovered: bool = False
 
     # The closed set is the set of nodes for which we know with certainty the minimum distance to
@@ -77,25 +59,31 @@ class Node:
     def __hash__(self):
         return id(self)
 
-
-# Build a 2D array of nodes so we can easily look them up by coordinates
-node_grid = np.empty_like(data, dtype=object)
-for y in range(data.shape[0]):
-    for x in range(data.shape[1]):
-        node_grid[y, x] = Node(y, x, data[y, x])
-
-for node in node_grid.flatten():
-    node.compute_neighbors(node_grid)# = list(node.get_neighbors(node_grid))
+    def __lt__(self, other):
+        return self.distance < other.distance
 
 
-# print(node_grid[5, 3])
+def create_nodes(cost_grid):
 
-# sys.exit()
+    # Build a 2D array of nodes so we can easily look them up by coordinates
+    node_grid = np.empty_like(cost_grid, dtype=object)
+    for y in range(cost_grid.shape[0]):
+        for x in range(cost_grid.shape[1]):
+            node_grid[y, x] = GraphNode(y, x, cost_grid[y, x])
+
+    for node in node_grid.flatten():
+        node.compute_neighbors(node_grid)# = list(node.get_neighbors(node_grid))
+
+    return node_grid
+
+
+def print_dense_grid(array):
+    for row in array:
+        print("".join([str(x) for x in row]))
 
 
 def print_grid_distances(node_grid):
     def format_node(node):
-        # dist = str(self.distance).rjust(2)
         if node.is_closed:
             return f"{node.distance} ".rjust(4)
         elif node.discovered:
@@ -134,61 +122,44 @@ def print_path(node_grid, path):
 
 
 def compute_distances(node_grid, start_node, end_node):
-    # We know the minimum distance for the destination is simply the cost of the end node itself.
+    # The distance for the destination is simply the cost of the end node itself.
     end_node.discovered = True
     end_node.distance = end_node.cost
-    # We know the minimum cost for the destination so it's closed.
-    end_node.is_closed = True
 
-    # The initial open set is simply the immediate neighborhood of the end node.
-    # open_set = list(end_node.get_neighbors(node_grid))
-    open_set = end_node.neighbors[:]
-    for node in open_set:
-        node.discovered = True
-        node.distance = node.cost + end_node.distance
+    # The initial open set is simply the starting node.
+    open_set = [end_node]
+    heapq.heapify(open_set)
 
     # print(f"Initial state:")
     # print_grid_distances(node_grid)
 
-    for i in range(1000):
+    for i in range(1000000):
         if len(open_set) == 0:
             print("Ran out of nodes to explore :)")
             break
 
-        discovered_nodes = []
+        current_node = heapq.heappop(open_set)
 
-        for current_node in open_set:
-            distance_changed = False
-            # for neighbor in current_node.get_neighbors(node_grid):
-            for neighbor in current_node.neighbors:
-                if not neighbor.discovered:
-                    # if neighbor in discovered_nodes:
-                    #     raise Exception("HEY")
-                    discovered_nodes.append(neighbor)
-                    neighbor.discovered = True
-                    neighbor.distance = neighbor.cost + current_node.distance
-                else:
-                    distance_via_neighbor = current_node.cost + neighbor.distance
-                    if distance_via_neighbor < current_node.distance:
-                        distance_changed = True
-                        current_node.distance = distance_via_neighbor
+        for neighbor in current_node.neighbors:
+            # if neighbor.is_closed:
+            #     continue
 
-                # if neighbor.is_closed:
-                #     current_node.is_closed
+            if not neighbor.discovered:
+            # if neighbor.distance == sys.maxsize:
+                neighbor.discovered = True
+                neighbor.distance = neighbor.cost + current_node.distance
+                heapq.heappush(open_set, neighbor)
+            else:
+                distance_via_neighbor = current_node.cost + neighbor.distance
+                if distance_via_neighbor < current_node.distance:
+                    current_node.distance = distance_via_neighbor
 
+        if current_node is start_node: # and current_node.is_open:
+            print(f"Path found! iteration: {i}, distance: {current_node.distance}")
+            return
 
-            if current_node is start_node: # and current_node.is_open:
-                print(f"Found it: {current_node.distance}")
-                return
-
-            # if not distance_changed:
-                # node.is_open = False
-                # node.is_closed = True
-
-        open_set = [node for node in open_set if not node.is_closed] + discovered_nodes
-
-        open_set.sort(key=lambda node: node.distance)
-
+        # we would sort open_set here but the min heap structure magically keeps it sorted somehow
+        # open_set.sort(key=lambda node: node.distance)
 
         # print(f"Iteration {i}, open set size = {len(open_set)}:")
         # print_grid_distances(node_grid)
@@ -198,7 +169,7 @@ def find_optimal_path(node_grid, start_node, end_node):
     path = [start_node]
     current_node = start_node
 
-    for i in range(1000):
+    for i in range(10000):
         # current_node = min(current_node.get_neighbors(node_grid), key=lambda node: node.distance)
         current_node = min(current_node.neighbors, key=lambda node: node.distance)
         path.append(current_node)
@@ -208,17 +179,47 @@ def find_optimal_path(node_grid, start_node, end_node):
 
     return None
 
-
+# part 1
+node_grid = create_nodes(data)
 start_node = node_grid[0, 0]
 end_node = node_grid[-1, -1]
-
 compute_distances(node_grid, start_node, end_node)
 optimal_path = find_optimal_path(node_grid, start_node, end_node)
-
-# part 1
-print(f"Part 1 solution: {None}")
 print_path(node_grid, optimal_path)
-print(f"Total cost: {sum(node.cost for node in optimal_path[1:])}")
+print(f"Part 1 solution: {sum(node.cost for node in optimal_path[1:])}")
+# sys.exit()
 
 # part 2
-print(f"Part 2 solution: {None}")
+tile_number = 5
+data_tiled = np.tile(data, (tile_number, tile_number))
+
+# This magically generates a matrix of dimension (H * tile_number, W * tile_number)
+# where each (H, W) sub-matrix is all one value, which increments by 1 as you go right and down.
+# e.g. if H = 2, W = 4, and tile_number = 3:
+
+# [[0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2],
+#  [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2],
+#  [1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3],
+#  [1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3],
+#  [2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4],
+#  [2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4]]
+
+height_offsets = (
+    np.mgrid[:tile_number, :tile_number]
+    .sum(axis=0)
+    .repeat(data.shape[0], axis=0)
+    .repeat(data.shape[1], axis=1)
+)
+
+# this handles the weirdo base-9 wrapping, i.e. 7 => 8 => 9 => 1 => 2
+data_tiled = (((data_tiled - 1) + height_offsets) % 9) + 1
+# print_dense_grid(data_tiled)
+
+node_grid = create_nodes(data_tiled)
+start_node = node_grid[0, 0]
+end_node = node_grid[-1, -1]
+compute_distances(node_grid, start_node, end_node)
+optimal_path = find_optimal_path(node_grid, start_node, end_node)
+# print_path(node_grid, optimal_path)
+
+print(f"Part 2 solution: {sum(node.cost for node in optimal_path[1:])}")
