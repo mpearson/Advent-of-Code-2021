@@ -195,14 +195,19 @@ data_tiled = np.tile(data, (tile_number, tile_number))
 
 # This magically generates a matrix of dimension (H * tile_number, W * tile_number)
 # where each (H, W) sub-matrix is all one value, which increments by 1 as you go right and down.
-# e.g. if H = 2, W = 4, and tile_number = 3:
+# e.g. if H = 3, W = 4, and tile_number = 3:
 
-# [[0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2],
-#  [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2],
-#  [1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3],
-#  [1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3],
-#  [2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4],
-#  [2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4]]
+# [[ 0, 0, 0, 0,   1, 1, 1, 1,   2, 2, 2, 2 ],
+#  [ 0, 0, 0, 0,   1, 1, 1, 1,   2, 2, 2, 2 ],
+#  [ 0, 0, 0, 0,   1, 1, 1, 1,   2, 2, 2, 2 ],
+
+#  [ 1, 1, 1, 1,   2, 2, 2, 2,   3, 3, 3, 3 ],
+#  [ 1, 1, 1, 1,   2, 2, 2, 2,   3, 3, 3, 3 ],
+#  [ 1, 1, 1, 1,   2, 2, 2, 2,   3, 3, 3, 3 ],
+
+#  [ 2, 2, 2, 2,   3, 3, 3, 3,   4, 4, 4, 4 ],
+#  [ 2, 2, 2, 2,   3, 3, 3, 3,   4, 4, 4, 4 ],
+#  [ 2, 2, 2, 2,   3, 3, 3, 3,   4, 4, 4, 4 ]]
 
 height_offsets = (
     np.mgrid[:tile_number, :tile_number]
